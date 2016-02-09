@@ -1,0 +1,11 @@
+commit 9e6aaff0376b84ccfeffb0aababfb09fe514b035
+Author: mosendz <ilya.mosendz@gmail.com>
+Date:   Tue Feb 9 18:57:18 2016 +0300
+
+    Add status.txt
+
+commit ae95c6f8013a2ae7d06f237e9554fac984294711
+Author: mosendz <ilya.mosendz@gmail.com>
+Date:   Tue Feb 9 18:54:31 2016 +0300
+
+    Add .gitignore
