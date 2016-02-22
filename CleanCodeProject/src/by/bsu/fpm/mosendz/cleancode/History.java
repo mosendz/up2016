@@ -1,79 +1,150 @@
 package by.bsu.fpm.mosendz.cleancode;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.regex.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 
-/**
- * Created by User on 13.02.2016.
- */
-public class History extends ArrayList<Message> {
-    public void showAll(){
-        for(Message local:this) System.out.println(local);
-    }
-    public boolean show(long t1, long t2){
-        boolean found = false;
-        long time;
-        int count = 0;
-        for(Message local:this){
-            time = local.getTimestamp();
-            if (time>=t1 && time<=t2){
-                count++;
-                found = true;
-                System.out.println(local);
-            }
+import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Scanner;
+
+class History {
+    private final SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss dd.MM.yyyy");
+    private final Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
+    private HistoryList list;
+    private PrintWriter logWriter;
+
+    public History() {
+        list = new HistoryList();
+        try {
+            logWriter = new PrintWriter("log.txt");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
-        System.out.println(new Date()+" Found messages between "+new Date(t1)+" and "+new Date(t2)+" : "+count);
-        return found;
     }
-    public boolean delete(String id) {
-        for(Message local:this) {
-            if(local.hasID(id)) {
-                remove(local);
-                return true;
-            }
+
+    public PrintWriter getLogWriter() {
+        return logWriter;
+    }
+
+    public void load() {
+        try {
+            JsonReader reader = new JsonReader(new FileReader("history.json"));
+            list = gson.fromJson(reader, HistoryList.class);
+            System.out.println("История сообщений загружена");
+            logWriter.println(new Date() + " command:load File loaded");
+            reader.close();
+        } catch (IOException e) {
+            logWriter.println(new Date() + " command:load Error while loading file");
         }
-            return false;
     }
-    public boolean searchAuthor(String author) {
-        boolean found = false;
-        int count = 0;
-        for(Message local:this){
-            if(local.fromAuthor(author))
-            {
-                found = true;
-                System.out.println(local);
-                ++count;
-            }
+
+    public void save() {
+        try {
+            JsonWriter writer = new JsonWriter(new FileWriter("history.json"));
+            gson.toJson(list, HistoryList.class, writer);
+            System.out.println("История сообщений сохранена");
+            writer.close();
+            logWriter.println(new Date() + " command:save File saved");
+        } catch (IOException e) {
+            logWriter.println(new Date() + " command:save Error while saving file");
         }
-        MyProject.logWriter.println(new Date()+" Found by author: "+count+" messages");
-        return found;
     }
-    public boolean searchKeyword(String keyword) {
-        boolean found = false;
-        int count = 0;
-        for(Message local:this){
-            if(local.contains(keyword)){
-                found = true;
-                ++count;
-                System.out.println(local);
+
+    public void add() {
+        try {
+            Scanner in = new Scanner(System.in);
+            System.out.print("Введите ID ");
+            String id = in.nextLine();
+            System.out.print("Введите автора ");
+            String author = in.nextLine();
+            System.out.println("Введите дату и время в формате HH:mm:ss dd.MM.yyyy");
+            String date = in.nextLine();
+            System.out.print("Введите сообщение ");
+            String message = in.nextLine();
+            int maxMessageLength = 140;
+            if (message.length() > maxMessageLength) {
+                logWriter.println(new Date() + " command:add Entered message is longer than 140 symbols");
             }
+            list.add(new Message(id, author, message, format.parse(date)));
+            System.out.println("Сообщение добавлено");
+            logWriter.println(new Date() + " command:add Message added");
+        } catch (ParseException e) {
+            logWriter.println(new Date() + " command:add Error while parsing date");
         }
-        MyProject.logWriter.println(new Date()+" Found by keyword: "+count+" messages");
-        return found;
     }
-    public boolean searchExpression(String exp){
-        boolean found = false;
-        int count = 0;
-        Pattern p = Pattern.compile(exp);
-        for(Message local:this){
-            if (local.contains(p)){
-                found = true;
-                ++count;
-                System.out.println(local);
+
+    public void viewAll() {
+        Collections.sort(list);
+        list.showAll();
+        logWriter.println(new Date() + " command:viewAll History viewed");
+    }
+
+    public void delete() {
+        Scanner in = new Scanner(System.in);
+        System.out.print("Введите id ");
+        String id = in.nextLine();
+        if (list.delete(id)) {
+            System.out.println("Удаление успешно");
+            logWriter.println(new Date() + " command:delete Message with ID " + id + " has been successfully deleted");
+        } else {
+            System.out.println("Сообщение с указанным ID не найдено");
+            logWriter.println(new Date() + " command:delete Message with ID " + id + " was not found");
+        }
+    }
+
+    public void search() {
+        Scanner in = new Scanner(System.in);
+        System.out.println("1 - Поиск по автору" +
+                "\n2 - Поиск по ключевому слову" +
+                "\n3 - Поиск по регулярному выражению");
+        int i = in.nextInt();
+        in.nextLine();
+        int found = 0;
+        switch (i) {
+            case 1:
+                System.out.print("Введите автора ");
+                found = list.searchAuthor(in.nextLine());
+                break;
+            case 2:
+                System.out.print("Введите ключевое слово ");
+                found = list.searchKeyword(in.nextLine());
+                break;
+            case 3:
+                System.out.print("Введите регулярное выражение ");
+                found = list.searchExpression(in.nextLine());
+                break;
+            default:
+                System.out.println("Нет команды");
+        }
+        if (found == 0) {
+            System.out.println("Сообщения не найдены");
+        }
+        logWriter.println(new Date() + " command:search Messages found: " + found);
+    }
+
+    public void viewTime() {
+        Scanner in = new Scanner(System.in);
+        Collections.sort(list);
+        int found;
+        try {
+            System.out.println("Для ввода используется HH.mm.ss dd.MM.yyyy");
+            System.out.println("Введите начальное время ");
+            Date start = format.parse(in.nextLine());
+            System.out.println("Введите конечное время ");
+            Date finish = format.parse(in.nextLine());
+            if ((found = list.show(start, finish)) == 0) {
+                System.out.println("Сообщения не найдены");
             }
+            logWriter.println(new Date() + " Found messages between " + start + " and " + finish + " : " + found);
+        } catch (ParseException e) {
+            logWriter.println(new Date() + " command:viewTime Error while parsing date");
         }
-        MyProject.logWriter.println(new Date()+" Found by regular expression: "+count+" messages");
-        return found;
     }
+
+
 }
