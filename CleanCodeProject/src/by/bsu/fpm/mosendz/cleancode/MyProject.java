@@ -6,10 +6,9 @@ import java.util.Scanner;
 
 class MyProject {
 
-
     public static void main(String[] args) throws IOException, ParseException {
         Scanner in = new Scanner(System.in);
-        History h = new History();
+        History h = new History(in);
         System.out.println("1 - загрузка из файла" +
                 "\n2 - сохранение в файл" +
                 "\n3 - добавление сообщения" +
@@ -44,6 +43,7 @@ class MyProject {
                     h.viewTime();
                     break;
                 case 0:
+                    in.close();
                     return;
                 default:
                     System.out.println("Нет такой команды");
@@ -51,6 +51,5 @@ class MyProject {
             h.getLogWriter().flush();
         } while (true);
     }
-
 
 }

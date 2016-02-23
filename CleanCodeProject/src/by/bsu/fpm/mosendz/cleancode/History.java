@@ -17,9 +17,11 @@ class History {
     private final Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new DateTypeAdapter()).create();
     private HistoryList list;
     private PrintWriter logWriter;
+    private Scanner in;
 
-    public History() {
+    public History(Scanner input) {
         list = new HistoryList();
+        in = input;
         try {
             logWriter = new PrintWriter("log.txt");
         } catch (FileNotFoundException e) {
@@ -57,7 +59,6 @@ class History {
 
     public void add() {
         try {
-            Scanner in = new Scanner(System.in);
             System.out.print("Введите ID ");
             String id = in.nextLine();
             System.out.print("Введите автора ");
@@ -85,7 +86,6 @@ class History {
     }
 
     public void delete() {
-        Scanner in = new Scanner(System.in);
         System.out.print("Введите id ");
         String id = in.nextLine();
         if (list.delete(id)) {
@@ -98,7 +98,6 @@ class History {
     }
 
     public void search() {
-        Scanner in = new Scanner(System.in);
         System.out.println("1 - Поиск по автору" +
                 "\n2 - Поиск по ключевому слову" +
                 "\n3 - Поиск по регулярному выражению");
@@ -128,7 +127,6 @@ class History {
     }
 
     public void viewTime() {
-        Scanner in = new Scanner(System.in);
         Collections.sort(list);
         int found;
         try {
@@ -145,6 +143,5 @@ class History {
             logWriter.println(new Date() + " command:viewTime Error while parsing date");
         }
     }
-
 
 }
