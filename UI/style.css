@@ -1,0 +1,61 @@
+header {
+    height: 40px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    left: 0;
+    background-color: darkslategray;
+}
+
+#logo {
+    width: 100px;
+    font-size: 33px;
+    font-weight: bold;
+    font-family: "Segoe UI", Arial, sans-serif;
+    color: orange;
+}
+
+#message {
+}
+
+div.author {
+    text-align: left;
+    font-weight: bold;
+}
+
+time {
+    text-align: left;
+}
+
+div.text {
+    text-align: left;
+}
+
+#history {
+    overflow: auto;
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 40px;
+    bottom: 110px;
+}
+
+form {
+    position: absolute;
+    bottom: 25px;
+    left: 0;
+    right: 0;
+    height: 85px;
+    background-color: bisque;
+}
+
+footer {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 25px;
+    text-align: center;
+    font-family: "Segoe UI", Arial, sans-serif;
+    position: absolute;
+    background-color: honeydew;
+}
