@@ -2,8 +2,9 @@
 <html lang="ru-RU">
 <head>
     <title>Mchat</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
     <meta charset="UTF-8">
+    <script src="js/scripts.js"></script>
 </head>
 <body>
 <header>
@@ -15,32 +16,33 @@
     <div class="message">
         <div class="alienmessage">
             <div class="author">Михаил</div>
-            <time>01-03-2016 15:48:23</time>
+            <time>01.03.2016, 15:48:23</time>
             <div class="text">Привет!</div>
         </div>
+        <hr>
     </div>
-    <hr>
     <div class="message">
         <div class="mymessage">
             <div class="author">Я</div>
-            <time>01-03-2016 15:49:13</time>
+            <time>01.03.2016, 15:49:13</time>
             <div class="text">Здаров.</div>
             <a onclick="editMessage()">Редактировать</a>
             <a onclick="deleteMessage()">Удалить</a>
         </div>
+        <hr>
     </div>
-    <hr>
     <div class="message">
         <div class="alienmessage">
             <div class="author">Михаил</div>
-            <time>01-03-2016 15:49:25</time>
+            <time>01-03-2016, 15:49:25</time>
             <div class="text">Как дела?</div>
         </div>
+        <hr>
     </div>
 </div>
-<form>
-    <textarea rows="3" maxlength="140"></textarea><br>
-    <button type="button">Отправить</button>
+<form id="messageForm">
+    <textarea id="messageInput" name="message" rows="3" maxlength="140" placeholder="Введите текст" required></textarea><br>
+    <button type="button" value="Отправить" onclick="sendMessage()">Отправить</button>
 </form>
 <footer>
     Developed by Ilya Mosendz, 2016
